@@ -386,7 +386,11 @@ class GenericRepo(cloudflare.CloudFlareMixin):
         ipfs = self.config.ipfs
         if not self.config['keep_pinned_previous_versions'] and self.last_ipfs_addr is not None:
             logger.info(f'Unpinning hash: {self.last_ipfs_addr}')
-            ipfs.pin.rm(self.last_ipfs_addr)
+            try:
+                ipfs.pin.rm(self.last_ipfs_addr)
+            except Exception as e:
+                logger.error(e)
+                pass
 
         publish_dir = path / (self.publish_dir[1:] if self.publish_dir.startswith('/') else self.publish_dir)
         logger.info(f'Adding directory {publish_dir} to IPFS')
